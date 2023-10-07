@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  db:
+    image: docker-hub.docker.lamoda.ru/bitnami/postgresql:12.4.0
+    environment:
+      - POSTGRESQL_PASSWORD=tasks
+      - POSTGRESQL_USER=tasks
+      - POSTGRESQL_DATABASE=tasks
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5432:5432
+
+  nginx:
+    image: base.docker.lamoda.ru/nginx:nginx-1.17.9-alpine-0.1.3
+    environment:
+      UPSTREAM_HOST: app
+      UPSTREAM_PORT: 9000
+    depends_on:
+      - app
+    ports:
+      - 8090:80
+    volumes:
+      - ./nginx/conf.d/nginx.conf.j2:/etc/nginx/conf.d/nginx.conf.j2
+#      - ./nginx/conf.d/nginx.conf:/opt/openresty/nginx/conf/nginx.conf
+
+  app:
+    build: .
+    volumes:
+#      - ./tasks/public:/var/www/html
+      - ./tasks:/var/www/html
+#  app:
+#    image: bitnami/php-fpm:latest
+#    volumes:
+#      - ./tasks:/app
