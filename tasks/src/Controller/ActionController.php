@@ -56,7 +56,7 @@ class ActionController extends AbstractController
         ]);
     }
 
-    #[Route('/action-trigger/{key}/{id}', name: 'app_actions', methods:['post'])]
+    #[Route('/action-trigger/{key}/{id}', name: 'app_trigger', methods:['post'])]
     public function actionTrigger(ManagerRegistry $doctrine, ActionStatusRepository $actionStatusRepository, string $key, string $id): JsonResponse
     {
         $actionStatuses = $actionStatusRepository->findByKeyAndId($key, $id);
