@@ -1,0 +1,2 @@
+App\Entity\Action:
+    exclusion_policy: NONE
