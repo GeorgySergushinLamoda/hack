@@ -41,7 +41,7 @@ class ActionController extends AbstractController
                 "short_description" => $action->getShortDescription(),
                 "full_description" => $action->getFullDescription(),
                 "status" => $actionStatus->getStatus(),
-                "progress" => $actionStatus->getProgress(),
+                "progres" => $actionStatus->getProgress(),
                 "price" => $action->getPrice(),
                 "action_text" => $action->getActionText(),
                 "due_time" => $action->getFinishDate()->getTimestamp(),
