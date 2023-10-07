@@ -45,7 +45,8 @@ class ActionController extends AbstractController
                 "price" => $action->getPrice(),
                 "action_text" => $action->getActionText(),
                 "due_time" => $action->getFinishDate()->getTimestamp(),
-                "link" => $action->getlink()
+                "link" => $action->getlink(),
+                "steps" => $action->getSteps()
             ];
         }
 
@@ -59,23 +60,26 @@ class ActionController extends AbstractController
     #[Route('/action-trigger/{key}/{id}', name: 'app_trigger', methods:['post'])]
     public function actionTrigger(ManagerRegistry $doctrine, ActionStatusRepository $actionStatusRepository, string $key, string $id): JsonResponse
     {
-        $actionStatuses = $actionStatusRepository->findByKeyAndId($key, $id);
-        if ($actionStatuses === null) {
+        $actionStatus = $actionStatusRepository->findByKeyAndId($key, $id);
+        if ($actionStatus === null) {
             return $this->json([], 404);
         }
 
-        $currentValue = $actionStatuses->getProgress() ?? 0;
+        $currentValue = $actionStatus->getProgress() ?? 0;
         if ($currentValue === 0) {
-            $actionStatuses->setStatus("inProgres");
+            $actionStatus->setStatus("inProgres");
         }
-        $actionStatuses->setProgress($currentValue + 1);
-        if ($actionStatuses->getProgress() >= $actionStatuses->getAction()->getGoal()) {
-            $actionStatuses->setStatus("done");
+        $actionStatus->setProgress($currentValue + 1);
+        if ($actionStatus->getProgress() >= $actionStatus->getAction()->getGoal()) {
+            $actionStatus->setStatus("done");
         }
-        $doctrine->getManager()->persist($actionStatuses);
+        $doctrine->getManager()->persist($actionStatus);
         $doctrine->getManager()->flush();
 
-        return $this->json([]);
+        return $this->json([
+            "status" => $actionStatus->getStatus(),
+            "progress" => $actionStatus->getProgress(),
+        ]);
     }
 
     /**
