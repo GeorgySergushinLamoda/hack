@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Action;
 use App\Entity\ActionStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,20 +22,21 @@ class ActionStatusRepository extends ServiceEntityRepository
         parent::__construct($registry, ActionStatus::class);
     }
 
-//    /**
-//     * @return ActionStatus[] Returns an array of ActionStatus objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return ?ActionStatus
+     */
+    public function findByKeyAndId(string $key, string $id): ?ActionStatus
+    {
+        $byId = $this->findBy(['actorId' => $id]);
+        $result = [];
+        foreach ($byId as $item) {
+            if ($item->getAction()->getProcessor() === $key) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
 
 //    public function findOneBySomeField($value): ?ActionStatus
 //    {

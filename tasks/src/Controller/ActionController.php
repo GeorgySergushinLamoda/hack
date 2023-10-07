@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Action;
 use App\Entity\ActionStatus;
+use App\Repository\ActionStatusRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -53,6 +54,28 @@ class ActionController extends AbstractController
             "points" => $points,
             "tasks" => $tasks
         ]);
+    }
+
+    #[Route('/action-trigger/{key}/{id}', name: 'app_actions', methods:['post'])]
+    public function actionTrigger(ManagerRegistry $doctrine, ActionStatusRepository $actionStatusRepository, string $key, string $id): JsonResponse
+    {
+        $actionStatuses = $actionStatusRepository->findByKeyAndId($key, $id);
+        if ($actionStatuses === null) {
+            return $this->json([], 404);
+        }
+
+        $currentValue = $actionStatuses->getProgress() ?? 0;
+        if ($currentValue === 0) {
+            $actionStatuses->setStatus("inProgres");
+        }
+        $actionStatuses->setProgress($currentValue + 1);
+        if ($actionStatuses->getProgress() >= $actionStatuses->getAction()->getGoal()) {
+            $actionStatuses->setStatus("done");
+        }
+        $doctrine->getManager()->persist($actionStatuses);
+        $doctrine->getManager()->flush();
+
+        return $this->json([]);
     }
 
     /**

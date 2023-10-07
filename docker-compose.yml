@@ -26,14 +26,20 @@ services:
       - 8090:80
     volumes:
       - ./nginx/conf.d/nginx.conf.j2:/etc/nginx/conf.d/nginx.conf.j2
-#      - ./nginx/conf.d/nginx.conf:/opt/openresty/nginx/conf/nginx.conf
 
   app:
     build: .
     volumes:
-#      - ./tasks/public:/var/www/html
       - ./tasks:/var/www/html
+
+
+#
+#  nginx:
+#    image: b2b.docker.lamoda.ru/hackaton/nginx:1
+#    depends_on:
+#      - app
+#    ports:
+#      - 8090:80
+#
 #  app:
-#    image: bitnami/php-fpm:latest
-#    volumes:
-#      - ./tasks:/app
+#    image: b2b.docker.lamoda.ru/hackaton/php:1

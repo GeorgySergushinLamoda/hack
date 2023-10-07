@@ -1,0 +1,10 @@
+FROM php:8.2-fpm-alpine
+
+RUN apk add postgresql-dev
+RUN docker-php-ext-install pdo_pgsql
+
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+
+COPY ./tasks /var/www/html
+
+RUN chown -R www-data:www-data /var/www/html
