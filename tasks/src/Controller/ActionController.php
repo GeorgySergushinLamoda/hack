@@ -19,7 +19,7 @@ class ActionController extends AbstractController
         /** @var ActionStatus[] $actionStatuses */
         $actionStatuses = $doctrine
             ->getRepository(ActionStatus::class)
-            ->findBy(['actorId' => $id], ['id' => 'ASC']);
+            ->findBy(['actorId' => $id], ['id' => 'DESC']);
 
         if (empty($actionStatuses)) {
             $actionStatuses = $this->fillNewUser($doctrine, $id);
@@ -100,7 +100,7 @@ class ActionController extends AbstractController
             $actionStatus->setStatus("new");
             $actionStatus->setActorId($actorId);
             $actionStatus->setAction($action);
-            if (in_array($action->getProcessor(),['5_favorite_brand', 'review'] )) {
+            if (in_array($action->getProcessor(),['5_favourite_brands', 'review'] )) {
                 $actionStatus->setProgress(0);
             }
             $returnValue[] = $actionStatus;
